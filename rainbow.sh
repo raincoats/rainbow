@@ -26,7 +26,14 @@ function rainbows_constructor {
 
 # draws a rainbow line to test 24bit colour capability
 function rainbow-line {
-	for colour in {0..255..2}; do
+	# find the terminal's column count, so the line isn't too big
+	if   [ $COLUMNS -ge 255 ]; then local rate=1
+	elif [ $COLUMNS -ge 128 ]; then local rate=2
+	elif [ $COLUMNS -ge  86 ]; then local rate=3
+	elif [ $COLUMNS -ge  64 ]; then local rate=4
+	else local rate=5
+	fi
+	for colour in {0..255..$rate}; do
 		rainbows_constructor ${colour} 48; printf ' '
 	done
 	printf $'\033[0m\n'
@@ -45,11 +52,11 @@ function reset_colour_counter {
 	colour=0
 }
 
-function error {
+function error {  #error messages to stdout, like "rainbow: file not found"
 	printf "${name}: \033[0m${*}\n" >&2
 }
 
-function die {
+function die {  #error messages to stdout, then exit
 	error "${*}"; exit 1
 }
 
@@ -70,6 +77,7 @@ function main_char_loop {
 }
 
 function check_file {
+	# i feel this is pretty self explanatory
 	[  ! "$1" ] && die '-f needs an argument, eg. “-f /etc/passwd”'
 	[ -d "$1" ] && die      'is a directory: '"$1"
 	[ -e "$1" ] || die      'file not found: '"$1"
@@ -142,7 +150,7 @@ EOF
 			{ sed 's/^\t*//'; exit 0 }  << EOF 
 				rainbow v0.1 - https://github.com/raincoats/rainbow
 				by @reptar-xl
-				MIT license
+				license: zf0 anti-copyright pledge
 EOF
 			exit 0
 			;;
