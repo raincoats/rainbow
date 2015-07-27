@@ -113,9 +113,10 @@ while getopts f:r:bnqhV-t opt; do
 		q)
 			function error {}
 			;;
-		h)
-			cool_program_title=''
-			cool_program_title+=$'\033[38;2;255;0;0mr\033[38;2;255;23;0ma\033[38;2;255;47;0mi'
+		h)  #'cool program title' just says 'rainbows \v by \v @reptar-xl', in rainbows
+			# i mean i could just do like `echo 'rainbows by @reptar-xl | $0` but i don't trust it,
+			# i can see that having problems on other's computers
+			cool_program_title=$'\033[38;2;255;0;0mr\033[38;2;255;23;0ma\033[38;2;255;47;0mi'
 			cool_program_title+=$'\033[38;2;255;71;0mn\033[38;2;255;94;0mb\033[38;2;255;118;0mo'
 			cool_program_title+=$'\033[38;2;255;142;0mw\v\033[38;2;255;189;0mb\033[38;2;255;213;0my'
 			cool_program_title+=$'\v\033[38;2;250;255;0m@\033[38;2;226;255;0mr\033[38;2;202;255;0me'
