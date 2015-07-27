@@ -1,7 +1,7 @@
-#!/my/bin/tetris
-
+#!/usr/bin/env zsh
 LC_ALL=C
 trap 'printf "\033[0m\n"; exit' SIGINT SIGSTOP SIGQUIT
+
 name=$(basename "$0")
 
 function rainbows_constructor {
