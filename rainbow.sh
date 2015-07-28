@@ -149,7 +149,7 @@ EOF
 			;;
 		V)
 			{ sed 's/^\t*//'; exit 0 }  << EOF 
-				rainbow v0.1 - https://github.com/raincoats/rainbow
+				rainbow v1 - https://github.com/raincoats/rainbow
 				by @reptar-xl
 				license: zf0 anti-copyright pledge
 EOF
