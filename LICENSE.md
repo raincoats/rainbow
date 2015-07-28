@@ -50,7 +50,7 @@ If you decide to basically violate the law and not include
 a copyright license, you may wish to offer some explanation
 for that choice. Thus, we present ZAP.
 
-
+```
 -----------------------------------------------------------
 |                                                         |
 |            ZF0 Anti-copyright Pledge (ZAP)              |
@@ -94,7 +94,7 @@ for that choice. Thus, we present ZAP.
 |        without any guarantees or warranties.            |
 |                                                         |
 -----------------------------------------------------------
-
+```
 
 You are free (of course, how could we legally stop you?) to
 use this. You could include it directly, or even just say
