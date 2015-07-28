@@ -143,8 +143,7 @@ while getopts f:r:bnqhV-t opt; do
 			    rainbow < /etc/passwd
 			    dmesg | rainbow -r1
 			    rainbow -f /etc/resolv.conf -r 12
-			    dd if=/dev/sda | rainbow | dd of=/dev/sda 
-			    (don’t actually do that last one)
+			    dd if=/dev/sda | rainbow | dd of=/dev/sda (NO DON’T)
 EOF
 			;;
 		V)
