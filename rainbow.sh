@@ -25,7 +25,7 @@ function rainbows_constructor {
 }
 
 # draws a rainbow line to test 24bit colour capability
-function rainbow-line {
+function rainbow-test {
 	# find the terminal's column count, so the line isn't too big
 	if   [ $COLUMNS -ge 255 ]; then local rate=1
 	elif [ $COLUMNS -ge 128 ]; then local rate=2
@@ -156,7 +156,7 @@ EOF
 			exit 0
 			;;
 		t)
-			rainbow-line
+			rainbow-test
 			;;
 		-)
 			# like -- to mean ‘end of options’
