@@ -1,4 +1,7 @@
--- Introducing ZAP --
+zf0 Anti-Copyright Pledge
+=========================
+
+### Introducing ZAP
 
 Have you ever been in a situation where you based your code
 off of another script, yet you didn't want to include its
