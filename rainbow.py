@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-import fileinput
+import getopt
 
 #reopen stdout unbuffered, stackoverflow 230751
 #sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
@@ -20,12 +20,8 @@ def my_pain(eulogy):
 	to_stderr(pain)
 	sys.exit(1)
 
-def ansi_reset(newline):
-	if newline:
-		to_stdout ("\033[0m\n")
-	else:
-		to_stdout ("\033[0m")
-
+def ansi_reset():
+	to_stdout ("\033[0m\n")
 
 def rainbows_constructor(colour, mode, character):
 	h = colour / 43
@@ -55,7 +51,7 @@ def rainbows_constructor(colour, mode, character):
 
 def is_newline(character):
 	if character == "\n":
-		ansi_reset(1)
+		ansi_reset()
 		return True
 	else:
 		return False
@@ -66,6 +62,44 @@ def change_direction(colour):
 	elif colour <= colour_min:
 		return 1
 
+
+########################################################
+
+"""
+-f --file
+-r --rate
+-b --bg
+-n --noreset
+-q --quiet
+-h --help
+-v --verbose
+-V --version
+-t --test
+
+
+try:
+    opts, args = getopt.getopt(argv, 'f:r:bnqhvVt',
+    								['file=', 'rate=', 'bg', 'noreset', 'quiet', 'help',
+    								'verbose', 'version' 'test'])
+except getopt.GetoptError:
+    'err on opts'
+    sys.exit(2)
+
+for opt, arg in opts:
+    if opt in ('-h', '--help'):
+        usage()
+        sys.exit(2)
+    elif opt in ('-m', '--miner'):
+        miner_name = arg
+    elif opt in ('-p', '--params'):
+        params = arg
+    else:
+        usage()
+        sys.exit(2)
+
+"""
+########################################################
+
 debug=0
 colour=0
 direction=1 #1=increment, -1=decrement
@@ -73,32 +107,36 @@ rate=2
 colour_min = 0
 colour_max = 255
 
-while True:
-	character = sys.stdin.read(1)
-	if not character:
-		ansi_reset (1)
-		break
+try:
+	while True:
+		character = sys.stdin.read(1)
+		if not character:
+			ansi_reset()
+			break
 
-	# first check if it's outside the 0-255 range
-	if not (colour_min < colour <= colour_max):
-		direction = change_direction(colour)
+		# first check if it's outside the 0-255 range
+		if not (colour_min < colour <= colour_max):
+			direction = change_direction(colour)
 
-	# incrementing the colour
-	if direction == 1:
-		colour = colour + rate
-	elif direction == -1:
-		colour = colour - rate
+		# incrementing the colour
+		if direction == 1:
+			colour = colour + rate
+		elif direction == -1:
+			colour = colour - rate
 
-	if debug:
-		if character == "\n":
-			to_stdout ("\n")
+		if debug:
+			if character == "\n":
+				to_stdout ("\n")
+			else:
+				rainbows_constructor(colour, 38, str(colour)+" " )
 		else:
-			rainbows_constructor(colour, 38, str(colour)+" " )
-	else:
 
-		if is_newline(character):
-			colour = 0
-		else:
-			#print colour and character
-			rainbows_constructor(colour, 38, character)
+			if is_newline(character):
+				colour = 0
+			else:
+				#print colour and character
+				rainbows_constructor(colour, 38, character)
+
+except KeyboardInterrupt:
+	sys.exit(0)
 
