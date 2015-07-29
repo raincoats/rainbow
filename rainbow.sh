@@ -177,10 +177,10 @@ fi
 input=${input:-/dev/stdin}        # if no file is set, then read from stdin
 rainbow_mode=${rainbow_mode:-38}  #38 = fg, 48 = bg
 rate=${rate:-4}                   #rate=4 if the -r flag was not passed
-readonly min=$[   0 + ${rate} ]   #maximum colour number
-readonly max=$[ 255 - ${rate} ]   #minimum colour number
-local    colour=0                 #0 to start off with
-local    colourdirection=0        #0 = increment, 1 = decrement
+integer min=$[   0 + ${rate} ]   #maximum colour number
+integer max=$[ 255 - ${rate} ]   #minimum colour number
+integer    colour=0                 #0 to start off with
+integer    colourdirection=0        #0 = increment, 1 = decrement
 
 # main loop, we’re looping over each line here
 while IFS=$'\0' read -ru0 line; do
