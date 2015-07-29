@@ -71,7 +71,7 @@ function main_char_loop {
 		rainbows_constructor ${colour} || { die "invalid colour: ${colour}" }
 
 		#print colour
-		print -n "${char}"
+		print -n -- "${char}"
 
 		#if the colour is 255, then start decrementing.
 		#if the colour is 0, start incrementing.
