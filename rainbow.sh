@@ -183,7 +183,7 @@ integer    colour=0                 #0 to start off with
 integer    colourdirection=0        #0 = increment, 1 = decrement
 
 # main loop, we’re looping over each line here
-while IFS=$'\0' read -ru0 line; do
+while read -ru0 line; do
 	main_char_loop <<< "${line}"
 	reset_colour_counter #unless -n was passed
 done < "$input"
