@@ -8,7 +8,7 @@ function rainbows_constructor {
 	local h=$[ $1 / 43 ]
 	local f=$[ $1 - 43 * $h ]
 	local t=$[ $f * 255 / 43 ]
-	local q=$[ 255 - t ]
+	local q=$[ 255 - $t ]
 	[ $2 ] && rainbow_mode=$2
 	local assembled=$'\033['"${rainbow_mode:-38}"';2;'
 
