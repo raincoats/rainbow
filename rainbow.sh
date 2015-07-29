@@ -8,7 +8,7 @@ function rainbows_constructor {
 	local h=$[ $1 / 43 ]
 	local f=$[ $1 - 43 * $h ]
 	local t=$[ $f * 255 / 43 ]
-	local q=$[ 255 - t ]
+	local q=$[ 255 - $t ]
 	[ $2 ] && rainbow_mode=$2
 	local assembled=$'\033['"${rainbow_mode:-38}"';2;'
 
@@ -25,7 +25,7 @@ function rainbows_constructor {
 }
 
 # draws a rainbow line to test 24bit colour capability
-function rainbow-line {
+function rainbow-test {
 	# find the terminal's column count, so the line isn't too big
 	if   [ $COLUMNS -ge 255 ]; then local rate=1
 	elif [ $COLUMNS -ge 128 ]; then local rate=2
@@ -63,9 +63,18 @@ function die {  #error messages to stdout, then exit
 function main_char_loop {
 	# zsh version of read -rn1 (or so stack overflow says...)
  	while read -rku0 char; do	# for each character
+
+ 		#fix for background colours, reset colour before newline
+ 		if [ ${char} = $'\n' ]; then printf "\033[0m\n"; return; fi
+
+ 		#print ansi colour code itself
 		rainbows_constructor ${colour} || { die "invalid colour: ${colour}" }
+
+		#print colour
 		printf "${char}"
 
+		#if the colour is 255, then start decrementing.
+		#if the colour is 0, start incrementing.
 		if [ $colourdirection -eq 0 ]; then
 			colour=$[ colour + ${rate} ]
 			[ $colour -ge $max ] && { colour=$max; colourdirection=1 }
@@ -143,20 +152,20 @@ while getopts f:r:bnqhV-t opt; do
 			    rainbow < /etc/passwd
 			    dmesg | rainbow -r1
 			    rainbow -f /etc/resolv.conf -r 12
-			    dd if=/dev/sda | rainbow | dd of=/dev/sda 
-			    (don’t actually do that last one)
+			    dd if=/dev/sda | rainbow | dd of=/dev/sda (NO DON’T)
 EOF
 			;;
 		V)
 			{ sed 's/^\t*//'; exit 0 }  << EOF 
-				rainbow v1 - https://github.com/raincoats/rainbow
-				by @reptar-xl
+				rainbow v1.1
+				29 july 2015, 10:48 am, on the train at Faulconbridge
+				by @reptar-xl - https://github.com/raincoats/rainbow
 				license: zf0 anti-copyright pledge
 EOF
 			exit 0
 			;;
 		t)
-			rainbow-line
+			rainbow-test
 			;;
 		-)
 			# like -- to mean ‘end of options’
@@ -178,13 +187,13 @@ fi
 input=${input:-/dev/stdin}        # if no file is set, then read from stdin
 rainbow_mode=${rainbow_mode:-38}  #38 = fg, 48 = bg
 rate=${rate:-4}                   #rate=4 if the -r flag was not passed
-readonly min=$[   0 + ${rate} ]   #maximum colour number
-readonly max=$[ 255 - ${rate} ]   #minimum colour number
-local    colour=0                 #0 to start off with
-local    colourdirection=0        #0 = increment, 1 = decrement
+integer min=$[   0 + ${rate} ]   #maximum colour number
+integer max=$[ 255 - ${rate} ]   #minimum colour number
+integer    colour=0                 #0 to start off with
+integer    colourdirection=0        #0 = increment, 1 = decrement
 
 # main loop, we’re looping over each line here
-while IFS=$'\0' read -ru0 line; do
+while read -ru0 line; do
 	main_char_loop <<< "${line}"
 	reset_colour_counter #unless -n was passed
 done < "$input"
