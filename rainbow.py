@@ -14,11 +14,9 @@ def to_stderr(string):
 	sys.stderr.flush()
 
 def my_pain(eulogy):
-	pain = "\n\033[0m\033[7m"
-	pain += '<< '
+	pain = "\n\033[0m\033[7m" + '<< '
 	pain += str(eulogy)
-	pain += ' >>'
-	pain += "\033[0m\n"
+	pain += ' >>' + "\033[0m\n"
 	to_stderr(pain)
 	sys.exit(1)
 
