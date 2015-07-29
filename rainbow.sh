@@ -64,6 +64,9 @@ function main_char_loop {
 	# zsh version of read -rn1 (or so stack overflow says...)
  	while read -rku0 char; do	# for each character
 
+ 		#fix for background colours, reset colour before newline
+ 		if [ ${char} = $'\n' ]; then printf "\033[0m\n"; return; fi
+
  		#print ansi colour code itself
 		rainbows_constructor ${colour} || { die "invalid colour: ${colour}" }
 
