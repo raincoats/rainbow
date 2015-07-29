@@ -157,8 +157,9 @@ EOF
 			;;
 		V)
 			{ sed 's/^\t*//'; exit 0 }  << EOF 
-				rainbow v1 - https://github.com/raincoats/rainbow
-				by @reptar-xl
+				rainbow v1.1
+				29 july 2015, 10:48 am, on the train at Faulconbridge
+				by @reptar-xl - https://github.com/raincoats/rainbow
 				license: zf0 anti-copyright pledge
 EOF
 			exit 0
