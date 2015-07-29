@@ -63,9 +63,15 @@ function die {  #error messages to stdout, then exit
 function main_char_loop {
 	# zsh version of read -rn1 (or so stack overflow says...)
  	while read -rku0 char; do	# for each character
+
+ 		#print ansi colour code itself
 		rainbows_constructor ${colour} || { die "invalid colour: ${colour}" }
+
+		#print colour
 		printf "${char}"
 
+		#if the colour is 255, then start decrementing.
+		#if the colour is 0, start incrementing.
 		if [ $colourdirection -eq 0 ]; then
 			colour=$[ colour + ${rate} ]
 			[ $colour -ge $max ] && { colour=$max; colourdirection=1 }
