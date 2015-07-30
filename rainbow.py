@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import sys
 import getopt
 
@@ -50,7 +51,7 @@ def rainbows_constructor(colour, mode, character):
 	to_stdout (ansi_code)
 
 def is_newline(character):
-	if character == "\n":
+	if character == "\n" and reset_on_newlines == True:
 		ansi_reset()
 		return True
 	else:
@@ -64,41 +65,43 @@ def change_direction(colour):
 
 
 ########################################################
+def version():
+	to_stdout("""\
+rainbow.py v0.1
+30 july 2015
+by @reptar-xl - https://github.com/raincoats/rainbow
+license: zf0 anti-copyright pledge
+""")
+	sys.exit(2)
 
+def usage():
+	helptext = """\
+Usage: rainbow.py [OPTION...] [FILE]...
+Make text all rainbowy.
+If -f is not given, read from stdin.
+
+  -f, --file <file>  Read from file instead of stdin
+  -r, --rate <rate>  Rate that it cycles through colours (from 0 to 255, default 4)
+  -b, --bg           Background colour mode
+      --fg           Foreground colour mode (default)
+      --noreset      Don’t reset colour on newlines
+      --debug        Debug messages (instead of printing characters, it prints colour codes)
+  -q, --quiet        Hide error messages
+  -h, --help         You know what this does (displays this help text)
+  -v, --verbose      Does nothing (in case you assumed it meant verbose, which is default)
+  -V, --version      Display license & version info
+  -t, --test         Tests your terminal’s colour capability
+
+Examples:
+    rainbow < /etc/passwd
+    dmesg | rainbow -r1
+    rainbow -f /etc/resolv.conf -r 12
+    dd if=/dev/sda | rainbow | dd of=/dev/sda (NO DON’T)
 """
--f --file
--r --rate
--b --bg
--n --noreset
--q --quiet
--h --help
--v --verbose
--V --version
--t --test
+	to_stdout(helptext)
+	sys.exit(2)
 
-
-try:
-    opts, args = getopt.getopt(argv, 'f:r:bnqhvVt',
-    								['file=', 'rate=', 'bg', 'noreset', 'quiet', 'help',
-    								'verbose', 'version' 'test'])
-except getopt.GetoptError:
-    'err on opts'
-    sys.exit(2)
-
-for opt, arg in opts:
-    if opt in ('-h', '--help'):
-        usage()
-        sys.exit(2)
-    elif opt in ('-m', '--miner'):
-        miner_name = arg
-    elif opt in ('-p', '--params'):
-        params = arg
-    else:
-        usage()
-        sys.exit(2)
-
-"""
-########################################################
+###################################################################################################
 
 debug=0
 colour=0
@@ -106,6 +109,47 @@ direction=1 #1=increment, -1=decrement
 rate=2
 colour_min = 0
 colour_max = 255
+mode=38 #38 for foreground, 48 for background
+reset_on_newlines=True
+quiet = False #by default anyway
+
+###################################################################################################
+#getting options
+try:
+	opts, args = getopt.gnu_getopt(sys.argv[1:], 'f:r:bnqhvVt',
+									['file=', 'rate=', 'bg', 'fg', 'noreset', 'quiet', 'help',
+									'verbose', 'version', 'test'])
+
+	for opt, arg in opts:
+		if opt in ('-h', '--help'):
+			usage()
+		if opt in ('-V', '--version'):
+			version()
+		elif opt in ('-b', '--bg'):
+			mode = 48
+		elif opt in ('--fg'):
+			mode = 38
+		elif opt in ('-f', '--file'):
+			infile = arg
+		elif opt in ('-r', '--rate'):
+			rate = arg
+		elif opt in ('-v', '--verbose'):
+			quiet = False
+		elif opt in ('-q', '--quiet'):
+			quiet = True
+		elif opt in ('--noreset'):
+			reset_on_newlines = False
+		elif opt in ('--debug'):
+			debug = 1
+
+		else:
+			usage()
+
+except getopt.GetoptError:
+	'err on opts'
+	sys.exit(2)
+
+###################################################################################################
 
 try:
 	while True:
@@ -128,14 +172,14 @@ try:
 			if character == "\n":
 				to_stdout ("\n")
 			else:
-				rainbows_constructor(colour, 38, str(colour)+" " )
+				rainbows_constructor(colour, mode, str(colour)+" " )
 		else:
 
 			if is_newline(character):
 				colour = 0
 			else:
 				#print colour and character
-				rainbows_constructor(colour, 38, character)
+				rainbows_constructor(colour, mode, character)
 
 except KeyboardInterrupt:
 	sys.exit(0)
