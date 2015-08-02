@@ -204,19 +204,6 @@ try:
 		else:
 			rainbows_constructor(colour, mode, character) 			#print colour and character
 
-
 except KeyboardInterrupt:
+	ansi_reset()
 	sys.exit(0)
-
-"""
-	# if we're doing fg colours we can just reset and all that
-	# bg colours however still need a \033[0m at the end of each
-	# line, else you get ugly lines
-	if character == "\n" and reset_on_newlines == True:
-		if mode == 38: #fg
-			ansi_reset()
-			return True
-		elif mode == 48:
-	else:
-		return False
-"""
