@@ -13,4 +13,4 @@ The colour generating function `rainbows_constructor` was lifted from github use
 
 v1.
 
-### [example](https://raw.githubusercontent.com/raincoats/rainbow/master/example.png)
+### ![example](http://i.imgur.com/82HiYhM.png)
