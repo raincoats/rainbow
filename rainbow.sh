@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 LC_ALL=C
-trap 'printf "\033[0m\n"; exit' SIGINT SIGSTOP SIGQUIT
+trap 'printf -- "\033[m\n"; exit' SIGINT SIGSTOP SIGQUIT
 
 name=$(basename "$0")
 
@@ -13,12 +13,12 @@ function rainbows_constructor {
 	local assembled=$'\033['"${rainbow_mode:-38}"';2;'
 
 	case $h in
-		0)	printf "${assembled}""255;${t};0m" ;;
-		1)	printf "${assembled}""${q};255;0m" ;;
-		2)	printf "${assembled}""0;255;${t}m" ;;
-		3)	printf "${assembled}""0;${q};255m" ;;
-		4)	printf "${assembled}""${t};0;255m" ;;
-		5)	printf "${assembled}""255;0;${q}m" ;;
+		0)	printf -- "%s" "${assembled}""255;${t};0m" ;;
+		1)	printf -- "%s" "${assembled}""${q};255;0m" ;;
+		2)	printf -- "%s" "${assembled}""0;255;${t}m" ;;
+		3)	printf -- "%s" "${assembled}""0;${q};255m" ;;
+		4)	printf -- "%s" "${assembled}""${t};0;255m" ;;
+		5)	printf -- "%s" "${assembled}""255;0;${q}m" ;;
 		*)	die 'what? h in rainbows_constructor was '"${h}" ;;
 		esac
 
@@ -34,52 +34,47 @@ function rainbow-test {
 	else local rate=5
 	fi
 	for colour in {0..255..$rate}; do
-		rainbows_constructor ${colour} 48; printf ' '
+		rainbows_constructor $colour 48
+		printf -- ' '
 	done
-	printf $'\033[0m\n'
-	printf $'can you see a rainbow line above? if so, you have 24 bit colour! wahay!\n'
+	printf -- "%s\n%s\n" $'\033[m' "can you see a rainbow line above? if so, you have 24 bit colour! wahay!"
 	exit 0
 }
 
 function reset_colour_counter {
 	# why a function for this?
-	# 	1. because i think it’s cool
-	#	2. because i can
-	#	3. it’s my program
-	#   4. i think empty functions are hectic
-	#	5. because if the flag -n is passed, the getopts loop makes this
-	#      an empty function, which imo looks cleaner in the main loop
+	#	1. because i can
+	#	2. because if the flag -n is passed, the getopts loop makes this
+	#      an empty function, which imo looks slightly cleaner but is very
+	#      confusing and i cba fixing it and goddamn i used to program strangely
 	colour=0
 }
 
-function error {  #error messages to stdout, like "rainbow: file not found"
-	printf "${name}: \033[0m${*}\n" >&2
-}
-
-function die {  #error messages to stdout, then exit
-	error "${*}"; exit 1
+function error die {  #error messages to stdout, like "rainbow: file not found", optionally die
+	printf -- "%s: \033[m%s\n" "$name" "$@" >&2
+	[ "$0" = 'die' ] && exit 1
 }
 
 function main_char_loop {
 	# zsh version of read -rn1 (or so stack overflow says...)
- 	while read -rku0 char; do	# for each character
+ 	while read -rku0 char; do
 
  		#fix for background colours, reset colour before newline
- 		if [ ${char} = $'\n' ]; then printf "\033[0m\n"; return; fi
+ 		if [ ${char} = $'\n' ]; then printf -- $'\033[m\n'; return; fi
 
  		#print ansi colour code itself
-		rainbows_constructor ${colour} || { die "invalid colour: ${colour}" }
+		rainbows_constructor $colour || { die "invalid colour: $colour" }
 
 		#print colour
-		printf "${char}"
+		printf -- "%s" "${char}"
 
 		#if the colour is 255, then start decrementing.
 		#if the colour is 0, start incrementing.
 		if [ $colourdirection -eq 0 ]; then
-			colour=$[ colour + ${rate} ]
+			colour=$[ colour + $rate ]
 			[ $colour -ge $max ] && { colour=$max; colourdirection=1 }
 		else
-			colour=$[ colour - ${rate} ]
+			colour=$[ colour - $rate ]
 			[ $colour -le $min ] && { colour=$min; colourdirection=0 }
 		fi
 	done
@@ -99,7 +94,7 @@ while getopts f:r:bnqhV-t opt; do
 	case $opt in
 		f)
 			input="${OPTARG}"
-			check_file ${input}
+			check_file $input
 			;;
 
 		r)
@@ -107,7 +102,7 @@ while getopts f:r:bnqhV-t opt; do
 			then
 				rate=$OPTARG
 			else
-				error "rate must be between 0 and 255, ${OPTARG} given"
+				error "rate must be between 0 and 255, $OPTARG given"
 				error "continuing with rate = 4"
 				rate=4
 			fi
@@ -131,7 +126,7 @@ while getopts f:r:bnqhV-t opt; do
 			cool_program_title+=$'\v\033[38;2;250;255;0m@\033[38;2;226;255;0mr\033[38;2;202;255;0me'
 			cool_program_title+=$'\033[38;2;178;255;0mp\033[38;2;155;255;0mt\033[38;2;131;255;0ma'
 			cool_program_title+=$'\033[38;2;107;255;0mr\033[38;2;84;255;0m_\033[38;2;60;255;0mx'
-			cool_program_title+=$'\033[38;2;36;255;0ml\033[0m'	
+			cool_program_title+=$'\033[38;2;36;255;0ml\033[m'	
 			{ sed 's/^\t*//'; exit 0 } << EOF
 			${cool_program_title:---> rainbow by @reptar_xl <--}
 			Usage: $0 [OPTIONS]...
@@ -157,10 +152,10 @@ EOF
 			;;
 		V)
 			{ sed 's/^\t*//'; exit 0 }  << EOF 
-				rainbow v1.1
-				29 july 2015, 10:48 am, on the train at Faulconbridge
-				by @reptar-xl - https://github.com/raincoats/rainbow
-				license: zf0 anti-copyright pledge
+				rainbow v1.2
+				Valentine’s Day, 14 feb 2016, 3:11 pm, still hungover slightly
+				by Tom Shaddock <https://apricot.pictures>
+				license: to kill
 EOF
 			exit 0
 			;;
@@ -184,18 +179,18 @@ if ([ "$input"="" ] && [ "$1" ]); then
 	check_file ${input}
 fi
 
-input=${input:-/dev/stdin}        # if no file is set, then read from stdin
-rainbow_mode=${rainbow_mode:-38}  #38 = fg, 48 = bg
-rate=${rate:-4}                   #rate=4 if the -r flag was not passed
-integer min=$[   0 + ${rate} ]   #maximum colour number
-integer max=$[ 255 - ${rate} ]   #minimum colour number
-integer    colour=0                 #0 to start off with
-integer    colourdirection=0        #0 = increment, 1 = decrement
+input=${input:-/dev/stdin}       # if no file is set, then read from stdin
+rainbow_mode=${rainbow_mode:-38} #38 = fg, 48 = bg
+rate=${rate:-4}                  #rate=4 if the -r flag was not passed
+integer min=$[   0 + $rate ]     #maximum colour number
+integer max=$[ 255 - $rate ]     #minimum colour number
+integer colour=0                 #0 to start off with
+integer colourdirection=0        #0 = increment, 1 = decrement
 
 # main loop, we’re looping over each line here
 while read -ru0 line; do
 	main_char_loop <<< "${line}"
 	reset_colour_counter #unless -n was passed
 done < "$input"
-printf "\x1b[0m"
+printf -- $'\033[m'
 exit 0
